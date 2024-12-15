@@ -140,7 +140,7 @@ def import_products(app, db):
         admin = User.query.filter(User.role=='employee').first()
         
         if not admin:
-            new_user=User(email='tomchatz96@gmail.com', first_name='pipos', password=generate_password_hash('123456789', method='pbkdf2:sha256'), role='employee')
+            new_user=User(email='tomchatz96@gmail.com', first_name='user.emp', password=generate_password_hash('123456789', method='pbkdf2:sha256'), role='employee')
             db.session.add(new_user)
             db.session.commit()
         else: 
@@ -150,7 +150,7 @@ def import_products(app, db):
         customer = User.query.filter(User.role=='customer').first()
 
         if not customer:
-            new_user=User(email='tomchatz97@gmail.com', first_name='popos', password=generate_password_hash('123456789', method='pbkdf2:sha256'), role='customer')
+            new_user=User(email='tomchatz97@gmail.com', first_name='user.cust', password=generate_password_hash('123456789', method='pbkdf2:sha256'), role='customer')
             db.session.add(new_user)
             db.session.commit()
         else: 

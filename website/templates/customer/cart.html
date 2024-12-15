@@ -4,6 +4,8 @@
   <table class="table table-striped">
     <thead>
       <tr>
+        <th>id</th>
+        <th>cartid</th>
         <th>Product Name</th>
         <th>Price</th>
         <th>Quantity</th>
@@ -12,6 +14,8 @@
     <tbody>
       {% for product in customer_cart.cart_products %}
       <tr>
+        <td>{{ product.id }}</td>
+        <td>{{ product.cartid }}</td>
         <td>{{ product.name }}</td>
         <td>{{ product.price }}</td>
         <td>{{ product.quantity }}</td>
