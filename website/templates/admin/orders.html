@@ -8,6 +8,7 @@
         <tr>
           <th>Order ID</th>
           <th>Status</th>
+          <th>Date Created</th>
           <th>Actions</td>
         </tr>
       </thead>
@@ -15,6 +16,7 @@
         <tr>
           <td>{{ order.id }}</td>
           <td>{{ order.status }}</td>
+          <td>{{ order.date_created.strftime("%d/%m/%Y %H:%M") }}</td>
           <td><a href="/admin/orders/{{order.id}}" class="btn btn-success me-2">Edit Order</a></td>
         </tr>
       </tbody>

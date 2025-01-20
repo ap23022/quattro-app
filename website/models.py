@@ -1,6 +1,9 @@
 from website import db
 from flask_login import UserMixin
 from sqlalchemy.sql import func
+from datetime import datetime
+import pytz
+
 
 
 
@@ -32,6 +35,7 @@ class Order(db.Model):
     items = db.relationship('Order_Cart_Product', backref='order', lazy=True)
     status = db.Column(db.String, nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    date_created = db.Column(db.DateTime, default=datetime.now(pytz.timezone('Europe/Athens')))
 
 
 class Order_Cart_Product(db.Model):

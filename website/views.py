@@ -138,6 +138,7 @@ def edit_product(product_id):
     product = Product.query.get_or_404(product_id)
 
     if request.method == "POST":
+        
         new_stock = request.form.get("stock_quantity")
         product.stock_quantity = new_stock
         db.session.commit()
@@ -152,6 +153,23 @@ def delete_product(product_id):
     db.session.delete(product)
     db.session.commit()
     return redirect(url_for("views.products"))
+
+
+@views.route("/admin/products/increase_stock/<int:product_id>/<int:increase_by>", methods=["POST"])
+def increase_stock(product_id, increase_by):
+    print(product_id)
+    product = Product.query.get_or_404(product_id)
+    product.stock_quantity += increase_by
+    db.session.commit()
+    return jsonify({"message": "Success!"}), 200
+
+@views.route("/admin/products/reduce_stock/<int:product_id>/<int:decrease_by>", methods=["POST"])
+def reduce_stock(product_id, decrease_by):
+    print(product_id)
+    product = Product.query.get_or_404(product_id)
+    product.stock_quantity -= decrease_by
+    db.session.commit()
+    return jsonify({"message": "Success!"}), 200
 
 
 @views.route("/admin/orders")
@@ -249,8 +267,19 @@ def get_cart(user_id):
 @views.route("/customer/cart/<int:user_id>", methods=["POST"])
 def submit_order(user_id):
     order_items = (
-        db.session.query(Customer_Cart)
-        .filter(Customer_Cart.customer_id == user_id)
+        db.session.query(Customer_Cart, Product)
+        .join(Product, Customer_Cart.product_id == Product.id)
+        .join(
+            Order_Cart_Product,
+            Customer_Cart.id == Order_Cart_Product.cart_product_id,
+            isouter=True,
+        )
+        .filter(
+            and_(
+                Order_Cart_Product.order_id.is_(None),
+                Customer_Cart.customer_id == user_id,
+            )
+        )
         .all()
     )
     order = Order(status="pending", customer_id=user_id)
@@ -258,7 +287,7 @@ def submit_order(user_id):
     db.session.commit()
     for order_item in order_items:
         order_cart_product = Order_Cart_Product(
-            order_id=order.id, cart_product_id=order_item.id
+            order_id=order.id, cart_product_id=order_item.Customer_Cart.id
         )
         db.session.add(order_cart_product)
 
@@ -309,6 +338,7 @@ def edit_order(order_id):
     customer_order["products"] = products
     print(customer_order)
     return render_template("/admin/edit_order.html", customer_order=customer_order)
+
 
 
 @views.route("/admin/orders/<int:order_id>", methods=["POST"])
