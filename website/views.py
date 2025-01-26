@@ -35,7 +35,8 @@ def home():
     user = current_user
 
     if current_user.role == "employee":
-        return render_template("admin/home.html", user=current_user)
+        unapproved_orders = Order.query.filter_by(status="pending").count()
+        return render_template("admin/home.html", user=current_user, unapproved_orders=unapproved_orders)
     else:
         categories = Category.query.all()
         return render_template("home.html", categories=categories)
@@ -44,7 +45,8 @@ def home():
 @views.route("/admin")
 @login_required
 def admin_home():
-    return render_template("admin/home.html", user=current_user)
+    unapproved_orders = Order.query.filter_by(status="pending").count()
+    return render_template("admin/home.html", user=current_user, unapproved_orders=unapproved_orders)
 
 
 @views.route("/admin/users", methods=["GET"])
@@ -99,7 +101,7 @@ def edit_user(user_id):
         first_name = request.form.get("firstName")
         role = request.form.get("role")
 
-        user = User.query.filter_by(email=email).first()
+        user = User.query.filter_by(id=user_id).first()
 
         if len(email) < 4:
             flash("Email must contain at least 4 characters", category="error")
@@ -130,6 +132,8 @@ def DELETE_user(user_id):
 @views.route("admin/products")
 def products():
     all_products = Product.query.all()
+    for product in all_products:
+        product.low_stock=product.stock_quantity<5
     return render_template("admin/products.html", products=all_products)
 
 
@@ -168,6 +172,8 @@ def reduce_stock(product_id, decrease_by):
     print(product_id)
     product = Product.query.get_or_404(product_id)
     product.stock_quantity -= decrease_by
+    if product.stock_quantity < 0:
+        return jsonify({"message": "Stock can't be less than 0"}), 400
     db.session.commit()
     return jsonify({"message": "Success!"}), 200
 
@@ -220,7 +226,6 @@ def add_to_cart(customer_id, product_id):
         db.session.add(cart_item)
 
     db.session.commit()
-
     return jsonify({"message": "Success!"}), 200
 
 
@@ -292,6 +297,7 @@ def submit_order(user_id):
         db.session.add(order_cart_product)
 
     db.session.commit()
+    flash("Order submitted successfully!", "success")
     return redirect(url_for("views.home"))
 
 
@@ -338,7 +344,6 @@ def edit_order(order_id):
     customer_order["products"] = products
     print(customer_order)
     return render_template("/admin/edit_order.html", customer_order=customer_order)
-
 
 
 @views.route("/admin/orders/<int:order_id>", methods=["POST"])

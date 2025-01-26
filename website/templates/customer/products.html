@@ -2,7 +2,6 @@
 
 {% block content %}
 <div class="container">
-    <div id="messages"></div>
     <h1>Products</h1>
     <table class="table table-striped">
         <thead>
@@ -18,7 +17,7 @@
             <tr>
                 <td>{{ product.product_code }}</td>
                 <td>{{ product.product_name }}</td>
-                <td>{{ product.price }}</td>
+                <td>{{ product.price|round(2) }}</td>
                 <td>
 
                     <td>

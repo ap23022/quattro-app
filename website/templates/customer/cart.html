@@ -17,13 +17,13 @@
         <td>{{ product.id }}</td>
         <td>{{ product.cartid }}</td>
         <td>{{ product.name }}</td>
-        <td>{{ product.price }}</td>
+        <td>{{ product.price|round(2) }}</td>
         <td>{{ product.quantity }}</td>
       </tr>
       {% endfor %}
     </tbody>
   </table>
-  <p>Total price: {{ customer_cart.total_price }}</p>
+  <p>Total price: {{ customer_cart.total_price|round(2) }}</p>
     <form action="/customer/cart/{{current_user.id}}" method="post">
     <button type="submit" class="btn btn-primary mb-2 col-2">Submit Order</button>
   </form>

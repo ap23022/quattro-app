@@ -19,8 +19,10 @@
             <tr>
                 <td>{{ product.product_code }}</td>
                 <td>{{ product.product_name }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.stock_quantity }}</td>
+                <td>{{ product.price|round(2) }}</td>
+                <td>{{ product.stock_quantity }}
+                    <span class="badge rounded-pill text-bg-danger text-danger" {% if product.low_stock == false %} hidden {% endif %}>LOW STOCK !!</span>
+                </td>
                 <td>{{ product.machine }}</td>
                 <td>
                     <a href="{{ url_for('views.edit_product', product_id=product.id) }}" class="btn btn-warning">Edit Stock</a>
